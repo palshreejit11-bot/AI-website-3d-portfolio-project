@@ -229,7 +229,7 @@ const Section3D: React.FC<Section3DProps> = ({ data, setHoveredNodePosition }) =
                         position={[x, y, z]}
                         setHoveredPosition={setHoveredNodePosition}
                     >
-                        {isContact ? 
+                        {'value' in node ? 
                             <div className="text-left w-full"><strong className="text-cyan-400">{node.title}:</strong> {node.value}</div> : 
                             <h3 className="text-lg font-bold text-white">{node.title}</h3>
                         }
