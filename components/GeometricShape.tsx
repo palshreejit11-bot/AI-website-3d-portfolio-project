@@ -101,7 +101,7 @@ const HolographicTree = () => {
     }
     if(rootsRef.current) {
         const visibility = THREE.MathUtils.smoothstep(scroll.offset, 0.85, 1.0);
-        (rootsRef.current.children[0] as THREE.Mesh).material.opacity = visibility;
+        ((rootsRef.current.children[0] as THREE.Mesh).material as THREE.MeshStandardMaterial).opacity = visibility;
     }
   });
 
@@ -138,7 +138,14 @@ const HolographicTree = () => {
 };
 
 
-const Section3D = ({ data, setHoveredNodePosition }) => {
+// Fix: Define props interface for Section3D to correctly type the component.
+// This resolves the error where TypeScript incorrectly flags the 'key' prop as an issue.
+interface Section3DProps {
+  data: (typeof sceneContent)[number];
+  setHoveredNodePosition: (position: [number, number, number] | null) => void;
+}
+
+const Section3D = ({ data, setHoveredNodePosition }: Section3DProps) => {
     const { title, subtitle, nodes, range } = data;
     const groupRef = useRef<THREE.Group>(null!);
     const scroll = useScroll();
@@ -151,7 +158,7 @@ const Section3D = ({ data, setHoveredNodePosition }) => {
         // Update opacity on all materials
         groupRef.current.traverse((child) => {
             if (child instanceof THREE.Mesh) {
-                child.material.opacity = visibility;
+                (child.material as THREE.MeshStandardMaterial).opacity = visibility;
             }
         });
 
