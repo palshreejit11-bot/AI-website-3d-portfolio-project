@@ -3,14 +3,26 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Icosahedron } from '@react-three/drei';
 import * as THREE from 'three';
 
-// This component creates a subtle parallax effect based on mouse position.
+// This component creates a subtle parallax effect combined with a slow orbit.
 const Rig = () => {
   const { camera, mouse } = useThree();
   const vec = new THREE.Vector3();
   
-  return useFrame(() => {
-    // Smoothly interpolate camera position towards a point influenced by the mouse
-    camera.position.lerp(vec.set(mouse.x * 2, mouse.y * 1, camera.position.z), 0.02);
+  return useFrame((state) => {
+    const t = state.clock.getElapsedTime();
+    const radius = 8; // Match the initial camera z-position
+
+    // Calculate the base orbiting position for a slow, subtle rotation
+    const orbitX = Math.sin(t * 0.1) * radius;
+    const orbitZ = Math.cos(t * 0.1) * radius;
+
+    // Define the target position including the orbit and the mouse parallax
+    const targetX = orbitX + mouse.x * 1.5; // Slightly reduced parallax effect
+    const targetY = mouse.y * 1;
+    const targetZ = orbitZ;
+
+    // Smoothly interpolate camera position towards the dynamic target
+    camera.position.lerp(vec.set(targetX, targetY, targetZ), 0.02);
     // Always look at the center of the scene
     camera.lookAt(0, 0, 0);
   });
@@ -28,12 +40,12 @@ const Shape = () => {
     }
   });
 
-  // Fix: Create material imperatively and pass as a prop to avoid unrecognized JSX element error.
+  // Material with increased emissive intensity for a stronger glow
   const material = useMemo(() => new THREE.MeshStandardMaterial({
     color: "#4f46e5",
     wireframe: true,
     emissive: "#6366f1",
-    emissiveIntensity: 0.2,
+    emissiveIntensity: 0.4, // Increased for more glow
     flatShading: true,
   }), []);
 
@@ -44,18 +56,12 @@ const Shape = () => {
 
 // Main component that sets up the 3D scene
 const GeometricShape: React.FC = () => {
-  // Fix: Create lights imperatively and use <primitive> to avoid unrecognized JSX element errors.
-  const ambientLight = useMemo(() => new THREE.AmbientLight(0xffffff, 0.5), []);
-  const pointLight = useMemo(() => {
-    const light = new THREE.PointLight(0xffffff, 1.5);
-    light.position.set(10, 10, 10);
-    return light;
-  }, []);
-
   return (
-    <Canvas camera={{ position: [0, 0, 7.5], fov: 75 }}>
-      <primitive object={ambientLight} />
-      <primitive object={pointLight} />
+    // Adjusted camera position and fov for a slightly different perspective
+    <Canvas camera={{ position: [0, 0, 8], fov: 70 }}>
+      {/* Fix: Replaced direct JSX tags for lights with the <primitive> element to resolve TypeScript errors for unrecognized JSX elements. */}
+      <primitive object={new THREE.AmbientLight(undefined, 0.5)} />
+      <primitive object={new THREE.PointLight(undefined, 1.5)} position={[10, 10, 10]} />
       <Shape />
       <Rig />
     </Canvas>

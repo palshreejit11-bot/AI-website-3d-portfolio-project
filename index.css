@@ -1,3 +1,70 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+.aurora-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.aurora-shape1 {
+  position: absolute;
+  height: 400px;
+  width: 400px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, rgba(99, 102, 241, 0) 70%);
+  border-radius: 9999px;
+  filter: blur(100px);
+  animation: aurora-drift 20s infinite alternate;
+  top: 10%;
+  left: 20%;
+}
+
+.aurora-shape2 {
+  position: absolute;
+  height: 500px;
+  width: 500px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, rgba(139, 92, 246, 0) 70%);
+  border-radius: 9999px;
+  filter: blur(120px);
+  animation: aurora-drift 25s infinite alternate-reverse;
+  bottom: 5%;
+  right: 15%;
+}
+
+@keyframes aurora-drift {
+  0% {
+    transform: translate(0px, 0px) scale(1) rotate(0deg);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate(80px, -40px) scale(1.1) rotate(10deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-20px, 50px) scale(0.9) rotate(-5deg);
+    opacity: 0.8;
+  }
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #111827;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #4f46e5;
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #6366f1;
+}
