@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -12,7 +13,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 
 const App: React.FC = () => {
   const { scrollYProgress } = useScroll();
-  const midgroundY = useTransform(scrollYProgress, [0, 1], ['0%', '20%']);
+  const midgroundY = useTransform(scrollYProgress, [0, 1], ['0%', '10%']);
 
   return (
     <div className="bg-[#0a0a0a] text-gray-200 min-h-screen custom-scrollbar relative overflow-x-hidden">
@@ -20,7 +21,7 @@ const App: React.FC = () => {
         <div className="aurora-shape1"></div>
         <div className="aurora-shape2"></div>
       </div>
-      <div className="fixed inset-0 z-0 opacity-40">
+      <div className="fixed inset-0 z-0 opacity-50">
         <GeometricShape />
       </div>
 

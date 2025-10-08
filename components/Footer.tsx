@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 
 const socialLinks = [
@@ -12,11 +13,11 @@ const Footer: React.FC = () => {
     <footer className="bg-black/30 border-t border-gray-900">
       <div className="container mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center">
         <p className="text-gray-500 text-sm mb-4 md:mb-0">
-          &copy; {new Date().getFullYear()} Abstract. All rights reserved.
+          &copy; {new Date().getFullYear()} Synapse Digital. All rights reserved.
         </p>
         <div className="flex space-x-4">
           {socialLinks.map(link => (
-            <a key={link.name} href={link.href} className="text-gray-500 hover:text-indigo-400 transition-colors">
+            <a key={link.name} href={link.href} className="text-gray-500 hover:text-cyan-400 transition-colors">
               <span className="sr-only">{link.name}</span>
               {link.icon}
             </a>

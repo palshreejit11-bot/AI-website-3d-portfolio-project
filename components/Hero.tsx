@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 // Fix: Import `Variants` type from framer-motion.
 import { motion, Variants } from 'framer-motion';
@@ -30,18 +31,18 @@ const Hero: React.FC = () => {
           className="flex flex-col items-center"
         >
           <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-tight mb-4 tracking-tighter">
-            Precision Code. <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">Visionary Design.</span>
+            SYNAPSE DIGITAL
           </motion.h1>
           <motion.p variants={itemVariants} className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-8">
-            We partner with modern startups to build high-end, scalable, and beautifully designed digital solutions that drive growth and innovation.
+            Innovate. Perform. Scale.
           </motion.p>
           <motion.a
             variants={itemVariants}
             href="#portfolio"
-            className="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 shadow-lg shadow-indigo-600/30"
+            className="px-8 py-3 bg-cyan-600 text-white font-semibold rounded-lg hover:bg-cyan-700 shadow-lg shadow-cyan-600/30"
             whileHover={{
               scale: 1.05,
-              boxShadow: "0px 8px 25px rgba(99, 102, 241, 0.4)",
+              boxShadow: "0px 8px 25px rgba(34, 211, 238, 0.4)",
             }}
             transition={{ duration: 0.1 }}
           >
