@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { ScrollControls, useScroll, Dodecahedron } from '@react-three/drei';
+import { ScrollControls, useScroll, Cylinder, Icosahedron } from '@react-three/drei';
 import * as THREE from 'three';
 import ServiceNode from './ServiceNode';
 
@@ -61,71 +61,77 @@ const Rig = ({ hoveredNodePosition }: { hoveredNodePosition: [number, number, nu
   return useFrame((state) => {
     const t = state.clock.getElapsedTime();
     
-    // Determine the target camera distance (radius) from the center. Zoom in when hovered.
+    // Define base camera and interaction parameters
     const baseRadius = 8;
-    const targetRadius = hoveredNodePosition ? baseRadius * 0.85 : baseRadius;
+    const baseParallax = 1.5;
 
-    // Smoothly interpolate the camera's radius for the zoom effect.
+    // When a node is hovered, zoom in and reduce the parallax effect for a more stable focus.
+    const isHovered = !!hoveredNodePosition;
+    const targetRadius = isHovered ? baseRadius * 0.75 : baseRadius; // Increased zoom
+    const parallaxStrength = isHovered ? baseParallax * 0.5 : baseParallax; // Reduced parallax
+    
+    // Smoothly interpolate camera radius for zoom
     const currentRadius = camera.position.length();
-    const lerpedRadius = THREE.MathUtils.lerp(currentRadius, targetRadius, 0.05);
+    const lerpedRadius = THREE.MathUtils.lerp(currentRadius, targetRadius, 0.08); // Faster interpolation
     
-    // Calculate the orbital position based on the new, interpolated radius.
-    const orbitXWithZoom = Math.sin(t * 0.05) * lerpedRadius;
-    const orbitZWithZoom = Math.cos(t * 0.05) * lerpedRadius;
+    // Calculate orbital position
+    const orbitX = Math.sin(t * 0.05) * lerpedRadius;
+    const orbitZ = Math.cos(t * 0.05) * lerpedRadius;
     
-    // Add the mouse parallax effect as an offset to the zoomed orbital position.
-    const targetX = orbitXWithZoom + mouse.x * 1.5;
-    const targetY = mouse.y * 1.5;
-    const targetZ = orbitZWithZoom;
+    // Calculate final target position with parallax
+    const targetX = orbitX + mouse.x * parallaxStrength;
+    const targetY = mouse.y * parallaxStrength;
+    const targetZ = orbitZ;
 
-    // Smoothly move the camera towards its final target position.
-    camera.position.lerp(finalPosition.set(targetX, targetY, targetZ), 0.02);
+    // Smoothly move camera towards its target position
+    camera.position.lerp(finalPosition.set(targetX, targetY, targetZ), 0.05); // Faster camera movement
     
-    // Smoothly interpolate the point the camera is looking at for the pan effect.
-    currentLookAt.lerp(targetLookAt, 0.05);
+    // Smoothly interpolate the look-at point for the pan effect
+    currentLookAt.lerp(targetLookAt, 0.08); // Faster look-at
     
-    // Apply the look-at.
     camera.lookAt(currentLookAt);
   });
 };
 
-// This component defines the 3D model itself.
-const Model = () => {
-  const mesh = useRef<THREE.Mesh>(null!);
-  // useScroll from @react-three/drei provides scroll offset within a <ScrollControls> wrapper.
+// This component defines the holographic tree model.
+const HolographicTree = () => {
+  const treeRef = useRef<THREE.Group>(null!);
   const scroll = useScroll();
 
-  // Rotate and move the shape on each frame based on time and scroll position.
-  useFrame((_state, delta) => {
-    if (mesh.current) {
-      // Maintain existing gentle rotation
-      mesh.current.rotation.x += delta * 0.1;
-      mesh.current.rotation.y += delta * 0.15;
-      
-      // `scroll.offset` gives a value from 0 to 1 based on scroll position.
-      const scrollValue = scroll.offset;
+  // Shared material for the holographic effect
+  const materialProps = {
+    color: "#1e1b4b",
+    wireframe: true,
+    emissive: "#22d3ee", // A bright cyan color
+    emissiveIntensity: 1.2,
+    roughness: 0.5,
+    metalness: 0.8
+  };
 
-      // Link Z-rotation to scroll progress for a full 360-degree turn
-      mesh.current.rotation.z = scrollValue * Math.PI * 2;
+  useFrame((_state, delta) => {
+    if (treeRef.current) {
+      // Slow, constant rotation for a living effect
+      treeRef.current.rotation.y += delta * 0.15;
       
-      // Create an aggressive negative parallax effect by moving the model down and back
-      // as the user scrolls down. This makes it appear to scroll "slower" than the page.
-      mesh.current.position.y = -scrollValue * 8; // Move down
-      mesh.current.position.z = scrollValue * 4;  // Move farther away
+      // Re-use the aggressive scroll-based animations from the old model
+      const scrollValue = scroll.offset;
+      treeRef.current.rotation.z = scrollValue * Math.PI;
+      treeRef.current.position.y = -1 - (scrollValue * 8); // Start at y=-1 and move down
+      treeRef.current.position.z = scrollValue * 4;
     }
   });
 
   return (
-    <Dodecahedron ref={mesh} args={[1.2, 0]} scale={2.0}>
-      <meshStandardMaterial 
-        color="#1e1b4b" 
-        wireframe 
-        emissive="#4f46e5" 
-        emissiveIntensity={1.0} 
-        roughness={0.5} 
-        metalness={0.8}
-      />
-    </Dodecahedron>
+    <group ref={treeRef} scale={1.2} position={[0, -1, 0]} dispose={null}>
+      {/* Foliage */}
+      <Icosahedron args={[1.8, 1]} position={[0, 2, 0]}>
+        <meshStandardMaterial {...materialProps} />
+      </Icosahedron>
+      {/* Trunk */}
+      <Cylinder args={[0.15, 0.2, 3, 8]} position={[0, 0, 0]}>
+        <meshStandardMaterial {...materialProps} />
+      </Cylinder>
+    </group>
   );
 };
 
@@ -148,7 +154,7 @@ const GeometricShape: React.FC = () => {
       />
       {/* ScrollControls is necessary for the @react-three/drei useScroll hook to work. */}
       <ScrollControls pages={4} damping={0.1}>
-        <Model />
+        <HolographicTree />
         {/* Render service nodes in a circular pattern */}
         {services.map((service, index) => {
           const angle = (index / services.length) * Math.PI * 2;
