@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Icosahedron } from '@react-three/drei';
 import * as THREE from 'three';
@@ -28,38 +28,27 @@ const Shape = () => {
     }
   });
 
-  // FIX: Using <primitive> with a memoized material to work around a TypeScript error where
-  // the declarative <meshStandardMaterial> component is not recognized in JSX.
-  const material = useMemo(() => new THREE.MeshStandardMaterial({
-    color: '#4f46e5',
-    wireframe: true,
-    emissive: '#6366f1',
-    emissiveIntensity: 0.2,
-    flatShading: true
-  }), []);
-
   return (
     <Icosahedron ref={meshRef} args={[2, 0]} scale={1.5}>
-      <primitive object={material} attach="material" />
+      {/* FIX: Replaced imperative <primitive> with declarative <meshStandardMaterial>. This is the idiomatic react-three-fiber way and resolves the TypeScript error for unrecognized JSX elements. */}
+      <meshStandardMaterial
+        color="#4f46e5"
+        wireframe
+        emissive="#6366f1"
+        emissiveIntensity={0.2}
+        flatShading
+      />
     </Icosahedron>
   );
 };
 
 // Main component that sets up the 3D scene
 const GeometricShape: React.FC = () => {
-  // FIX: Using <primitive> with memoized lights to work around a TypeScript error where
-  // the declarative <ambientLight> and <pointLight> components are not recognized in JSX.
-  const ambientLight = useMemo(() => new THREE.AmbientLight(0xffffff, 0.5), []);
-  const pointLight = useMemo(() => {
-    const light = new THREE.PointLight(0xffffff, 1.5);
-    light.position.set(10, 10, 10);
-    return light;
-  }, []);
-  
   return (
     <Canvas camera={{ position: [0, 0, 7.5], fov: 75 }}>
-      <primitive object={ambientLight} />
-      <primitive object={pointLight} />
+      {/* FIX: Replaced imperative <primitive> with declarative light components. This is the idiomatic react-three-fiber way and resolves the TypeScript error for unrecognized JSX elements. */}
+      <ambientLight intensity={0.5} />
+      <pointLight position={[10, 10, 10]} intensity={1.5} />
       <Shape />
       <Rig />
     </Canvas>
