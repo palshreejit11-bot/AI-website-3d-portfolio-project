@@ -1,4 +1,3 @@
-
 import React from 'react';
 import SectionWrapper, { MotionItem } from './SectionWrapper';
 
@@ -44,7 +43,7 @@ const services = [
 const Services: React.FC = () => {
   return (
     <SectionWrapper id="services">
-      <MotionItem>
+      <MotionItem parallax>
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">What We Build</h2>
         <p className="text-lg text-gray-400 text-center max-w-2xl mx-auto mb-12">
           From concept to deployment, we provide end-to-end technical services that turn your vision into reality.

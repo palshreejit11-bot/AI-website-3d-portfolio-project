@@ -35,7 +35,7 @@ const Portfolio: React.FC = () => {
       </div>
 
       <div className="relative z-10">
-        <MotionItem>
+        <MotionItem parallax>
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Featured Work</h2>
           <p className="text-lg text-gray-400 text-center max-w-2xl mx-auto mb-12">
             We've helped ambitious startups launch and scale their digital products. Here's a glimpse of our impact.

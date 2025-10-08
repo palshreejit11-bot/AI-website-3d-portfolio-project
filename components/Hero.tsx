@@ -1,3 +1,4 @@
+
 import React from 'react';
 // Fix: Import `Variants` type from framer-motion.
 import { motion, Variants } from 'framer-motion';
@@ -34,10 +35,15 @@ const Hero: React.FC = () => {
           <motion.p variants={itemVariants} className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-8">
             We partner with modern startups to build high-end, scalable, and beautifully designed digital solutions that drive growth and innovation.
           </motion.p>
-          <motion.a 
-            variants={itemVariants} 
-            href="#portfolio" 
-            className="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-indigo-600/30"
+          <motion.a
+            variants={itemVariants}
+            href="#portfolio"
+            className="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 shadow-lg shadow-indigo-600/30"
+            whileHover={{
+              scale: 1.05,
+              boxShadow: "0px 8px 25px rgba(99, 102, 241, 0.4)",
+            }}
+            transition={{ duration: 0.1 }}
           >
             Explore Our Work
           </motion.a>

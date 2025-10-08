@@ -1,6 +1,7 @@
-import React, { useRef, useMemo } from 'react';
+
+import React, { useRef, useMemo, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Icosahedron } from '@react-three/drei';
+import { useGLTF, useAnimations } from '@react-three/drei';
 import * as THREE from 'three';
 import { useScroll } from 'framer-motion';
 
@@ -29,49 +30,64 @@ const Rig = () => {
   });
 };
 
-// This component defines the 3D shape itself.
-const Shape = () => {
-  const meshRef = useRef<THREE.Mesh>(null!);
+// This component defines the 3D model itself.
+const Model = () => {
+  const group = useRef<THREE.Group>(null!);
+  const { scene, animations } = useGLTF('/network_node.glb');
+  const { actions } = useAnimations(animations, group);
   const { scrollYProgress } = useScroll();
 
-  // Rotate the shape on each frame
+  useEffect(() => {
+    const animationName = Object.keys(actions)[0];
+    if (animationName) {
+      actions[animationName]?.play();
+    }
+  }, [actions]);
+
+  // Rotate and move the shape on each frame
   useFrame((_state, delta) => {
-    if (meshRef.current) {
+    if (group.current) {
       // Maintain existing gentle rotation
-      meshRef.current.rotation.x += delta * 0.1;
-      meshRef.current.rotation.y += delta * 0.15;
+      group.current.rotation.x += delta * 0.1;
+      group.current.rotation.y += delta * 0.15;
       
+      const scrollValue = scrollYProgress.get();
+
       // Link Z-rotation to scroll progress for a full 360-degree turn
-      meshRef.current.rotation.z = scrollYProgress.get() * Math.PI * 2;
+      group.current.rotation.z = scrollValue * Math.PI * 2;
+      
+      // Create an aggressive negative parallax effect by moving the model down and back
+      // as the user scrolls down. This makes it appear to scroll "slower" than the page.
+      group.current.position.y = -scrollValue * 8; // Move down
+      group.current.position.z = scrollValue * 4;  // Move farther away
     }
   });
 
-  // Material with increased emissive intensity for a stronger glow
-  const material = useMemo(() => new THREE.MeshStandardMaterial({
-    color: "#4f46e5",
-    wireframe: true,
-    emissive: "#6366f1",
-    emissiveIntensity: 0.4,
-    flatShading: true,
-  }), []);
-
-  return (
-    <Icosahedron ref={meshRef} args={[2, 0]} scale={1.5} material={material} />
-  );
+  return <primitive ref={group} object={scene} scale={1.5} />;
 };
 
+// Preload the model for a smoother loading experience.
+useGLTF.preload('/network_node.glb');
+
 // Main component that sets up the 3D scene
-const GeometricShape: React.FC = () => {
+const AIAgentModel: React.FC = () => {
   return (
-    // Adjusted camera position and fov for a slightly different perspective
     <Canvas camera={{ position: [0, 0, 8], fov: 70 }}>
-      {/* Fix: Use idiomatic declarative light components. This resolves TypeScript errors for unrecognized JSX elements. */}
-      <ambientLight intensity={0.5} />
-      <pointLight intensity={1.5} position={[10, 10, 10]} />
-      <Shape />
+       {/* Lighting setup from AiAgent.tsx, better for models */}
+      <hemisphereLight intensity={0.6} groundColor="black" />
+      <pointLight intensity={2.5} position={[5, 5, 5]} color="#6366f1" />
+      <spotLight
+        position={[-20, 50, 10]}
+        angle={0.12}
+        penumbra={1}
+        intensity={1.5}
+        castShadow
+        shadow-mapSize={1024}
+      />
+      <Model />
       <Rig />
     </Canvas>
   );
 };
 
-export default GeometricShape;
+export default AIAgentModel;

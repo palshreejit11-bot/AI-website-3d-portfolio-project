@@ -1,4 +1,3 @@
-
 import React from 'react';
 import SectionWrapper, { MotionItem } from './SectionWrapper';
 
@@ -6,7 +5,7 @@ const About: React.FC = () => {
   return (
     <SectionWrapper id="about">
       <div className="max-w-4xl mx-auto text-center">
-        <MotionItem>
+        <MotionItem parallax>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Philosophy</h2>
           <p className="text-lg text-gray-400 mb-8">
             We believe in a deeply collaborative process, working as an extension of your team. Our approach is rooted in three core principles: user-centric design, engineering excellence, and scalable architecture. We don't just write code; we architect solutions that are built to last and designed to perform.
