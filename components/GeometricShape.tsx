@@ -6,30 +6,37 @@ import * as THREE from 'three';
 import InfoNode from './ServiceNode'; // Re-using ServiceNode as InfoNode
 
 // --- DATA FOR EACH 3D SCENE ---
-const services = [
+
+// Define an interface for the node data to ensure type safety, as requested to fix TS error.
+interface IServiceNode {
+  title: string;
+  value?: string; // `value` is optional to accommodate all node types.
+}
+
+const services: IServiceNode[] = [
   { title: 'Frontend Development' },
   { title: 'UI/UX Design' },
   { title: 'API Integration' },
   { title: 'Cloud Solutions' },
 ];
-const projects = [
+const projects: IServiceNode[] = [
   { title: 'QuantumLeap AI' },
   { title: 'Nova Financials' },
   { title: 'Synergy Connect' },
 ];
-const philosophy = [
+const philosophy: IServiceNode[] = [
   { title: 'Innovation' },
   { title: 'Performance' },
   { title: 'Scalability' },
 ];
-const contactDetails = [
+const contactDetails: IServiceNode[] = [
     { title: 'Email', value: 'info@synapse.com' },
     { title: 'Phone', value: '+1 (555) 123-4567' },
     { title: 'Social', value: '@SynapseDigital' },
 ]
 
 const sceneContent = [
-  { id: 'hero', title: 'SYNAPSE DIGITAL', subtitle: 'Innovate. Perform. Scale.', nodes: [], range: [0, 1/6] },
+  { id: 'hero', title: 'SYNAPSE DIGITAL', subtitle: 'Innovate. Perform. Scale.', nodes: [] as IServiceNode[], range: [0, 1/6] },
   { id: 'services', title: 'OUR SERVICES', nodes: services, range: [1/6, 1/6] },
   { id: 'portfolio', title: 'OUR WORK', nodes: projects, range: [2.5/6, 1.5/6] },
   { id: 'about', title: 'OUR PHILOSOPHY', nodes: philosophy, range: [4/6, 1/6] },
@@ -229,7 +236,7 @@ const Section3D: React.FC<Section3DProps> = ({ data, setHoveredNodePosition }) =
                         position={[x, y, z]}
                         setHoveredPosition={setHoveredNodePosition}
                     >
-                        {'value' in node ? 
+                        {node.value ? 
                             <div className="text-left w-full"><strong className="text-cyan-400">{node.title}:</strong> {node.value}</div> : 
                             <h3 className="text-lg font-bold text-white">{node.title}</h3>
                         }
