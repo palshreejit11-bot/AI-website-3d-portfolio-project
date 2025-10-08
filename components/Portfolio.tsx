@@ -64,7 +64,7 @@ const Portfolio: React.FC = () => {
                   <motion.div 
                     className="rounded-lg overflow-hidden border-2 border-gray-800 shadow-2xl"
                     whileHover={{
-                      scale: 1.03,
+                      scale: 1.07,
                       rotateY: index % 2 === 0 ? -8 : 8,
                       borderColor: 'rgb(99 102 241)', // Tailwind's indigo-500
                       boxShadow: '0 25px 50px -12px rgb(99 102 241 / 0.25)',
