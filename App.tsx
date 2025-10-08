@@ -7,6 +7,7 @@ import Portfolio from './components/Portfolio';
 import About from './components/About';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
+import GeometricShape from './components/GeometricShape';
 
 const App: React.FC = () => {
   return (
@@ -14,6 +15,9 @@ const App: React.FC = () => {
       <div className="aurora-background">
         <div className="aurora-shape1"></div>
         <div className="aurora-shape2"></div>
+      </div>
+      <div className="fixed inset-0 z-0 opacity-40">
+        <GeometricShape />
       </div>
       <div className="relative z-10">
         <Header />

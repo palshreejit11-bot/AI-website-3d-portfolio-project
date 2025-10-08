@@ -46,8 +46,13 @@ export const MotionItem: React.FC<MotionItemProps> = ({ children, className }) =
   // This helps TypeScript correctly infer the type of `transition: { type: 'spring' }`
   // and resolves the "Type 'string' is not assignable to type 'AnimationGeneratorType'" error.
   const variants: Variants = {
-    hidden: { y: 30, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 100, damping: 20 } },
+    hidden: { y: 30, opacity: 0, rotateZ: 5 },
+    visible: { 
+      y: 0, 
+      opacity: 1, 
+      rotateZ: 0, 
+      transition: { type: 'spring', stiffness: 100, damping: 20 } 
+    },
   };
 
   return <motion.div variants={variants} className={className}>{children}</motion.div>;

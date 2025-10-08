@@ -2,6 +2,7 @@ import React, { useRef, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Icosahedron } from '@react-three/drei';
 import * as THREE from 'three';
+import { useScroll } from 'framer-motion';
 
 // This component creates a subtle parallax effect combined with a slow orbit.
 const Rig = () => {
@@ -31,12 +32,17 @@ const Rig = () => {
 // This component defines the 3D shape itself.
 const Shape = () => {
   const meshRef = useRef<THREE.Mesh>(null!);
+  const { scrollYProgress } = useScroll();
 
   // Rotate the shape on each frame
   useFrame((_state, delta) => {
     if (meshRef.current) {
+      // Maintain existing gentle rotation
       meshRef.current.rotation.x += delta * 0.1;
       meshRef.current.rotation.y += delta * 0.15;
+      
+      // Link Z-rotation to scroll progress for a full 360-degree turn
+      meshRef.current.rotation.z = scrollYProgress.get() * Math.PI * 2;
     }
   });
 

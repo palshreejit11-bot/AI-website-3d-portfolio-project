@@ -1,7 +1,6 @@
 import React from 'react';
 // Fix: Import `Variants` type from framer-motion.
 import { motion, Variants } from 'framer-motion';
-import GeometricShape from './GeometricShape';
 
 const Hero: React.FC = () => {
   const containerVariants: Variants = {
@@ -43,9 +42,6 @@ const Hero: React.FC = () => {
             Explore Our Work
           </motion.a>
         </motion.div>
-      </div>
-      <div className="absolute inset-0 z-0 opacity-40">
-        <GeometricShape />
       </div>
     </section>
   );
