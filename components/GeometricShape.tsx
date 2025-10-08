@@ -76,6 +76,7 @@ const FadingMaterial = new THREE.MeshStandardMaterial(materialProps);
 
 const HolographicTree = () => {
   const treeRef = useRef<THREE.Group>(null!);
+  const branchesRef = useRef<THREE.Group>(null!);
   const rootsRef = useRef<THREE.Group>(null!);
   const scroll = useScroll();
 
@@ -95,13 +96,39 @@ const HolographicTree = () => {
     position: [(Math.random() - 0.5) * 4, 1.5 + Math.random() * 2, (Math.random() - 0.5) * 4],
   })), [])
 
-  useFrame((_state, delta) => {
+  useFrame((state, delta) => {
+    const t = state.clock.getElapsedTime();
     if (treeRef.current) {
       treeRef.current.rotation.y += delta * 0.05;
     }
+
+    // Animate branches with a subtle sway
+    if (branchesRef.current) {
+      branchesRef.current.children.forEach((branch, i) => {
+        branch.rotation.z += Math.sin(t * 0.4 + i) * delta * 0.05;
+        branch.rotation.x += Math.cos(t * 0.2 + i) * delta * 0.05;
+      });
+    }
+    
+    // Animate roots and handle their visibility based on scroll
     if(rootsRef.current) {
         const visibility = THREE.MathUtils.smoothstep(scroll.offset, 0.85, 1.0);
-        ((rootsRef.current.children[0] as THREE.Mesh).material as THREE.MeshStandardMaterial).opacity = visibility;
+        // Traverse all children to update opacity
+        rootsRef.current.traverse((child) => {
+            if (child instanceof THREE.Mesh) {
+                const material = child.material as THREE.MeshStandardMaterial;
+                material.transparent = true; // Ensure transparency is enabled
+                material.opacity = visibility;
+            }
+        });
+
+        // Add subtle animation to individual root pieces
+        rootsRef.current.children.forEach((root, i) => {
+            // Skip the main, central root segment
+            if (i === 0) return; 
+            root.rotation.y += Math.sin(t * 0.3 + i) * delta * 0.1;
+            root.rotation.z += Math.cos(t * 0.5 + i) * delta * 0.1;
+        });
     }
   });
 
@@ -110,11 +137,13 @@ const HolographicTree = () => {
       <Icosahedron args={[2.5, 2]} position={[0, 2.5, 0]}>
         <meshStandardMaterial {...materialProps} roughness={0.2} metalness={1} emissiveIntensity={0.5} />
       </Icosahedron>
-      {branches.map((b, i) => 
-        <Icosahedron key={i} args={[b.scale * 2, 1]} position={b.position as any} rotation={b.rotation as any} >
-            <meshStandardMaterial {...materialProps} />
-        </Icosahedron>
-      )}
+      <group ref={branchesRef}>
+        {branches.map((b, i) => 
+          <Icosahedron key={i} args={[b.scale * 2, 1]} position={b.position as any} rotation={b.rotation as any} >
+              <meshStandardMaterial {...materialProps} />
+          </Icosahedron>
+        )}
+      </group>
       <Cylinder args={[0.1, 0.3, 4.5, 8]} position={[0, 0, 0]}>
         <meshStandardMaterial {...materialProps} />
       </Cylinder>
@@ -145,7 +174,8 @@ interface Section3DProps {
   setHoveredNodePosition: (position: [number, number, number] | null) => void;
 }
 
-const Section3D = ({ data, setHoveredNodePosition }: Section3DProps) => {
+// Fix: Explicitly typing the component as a React.FC ensures that special props like `key` are correctly handled by TypeScript without causing errors.
+const Section3D: React.FC<Section3DProps> = ({ data, setHoveredNodePosition }) => {
     const { title, subtitle, nodes, range } = data;
     const groupRef = useRef<THREE.Group>(null!);
     const scroll = useScroll();
