@@ -1,10 +1,10 @@
-import React, { useRef, useEffect } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useGLTF, useAnimations } from '@react-three/drei';
-import * as THREE from 'three';
-import { useScroll } from 'framer-motion';
 
-// This component creates a subtle parallax effect combined with a slow orbit.
+import React, { useRef } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { ScrollControls, useScroll, Dodecahedron } from '@react-three/drei';
+import * as THREE from 'three';
+
+// This component creates a subtle parallax effect combined with a slow orbit for the camera.
 const Rig = () => {
   const { camera, mouse } = useThree();
   const vec = new THREE.Vector3();
@@ -18,7 +18,7 @@ const Rig = () => {
     const orbitZ = Math.cos(t * 0.05) * radius;
 
     // Define the target position including the orbit and the mouse parallax
-    const targetX = orbitX + mouse.x * 1; // Slightly reduced parallax effect
+    const targetX = orbitX + mouse.x * 1;
     const targetY = mouse.y * 1;
     const targetZ = orbitZ;
 
@@ -31,48 +31,48 @@ const Rig = () => {
 
 // This component defines the 3D model itself.
 const Model = () => {
-  const group = useRef<THREE.Group>(null!);
-  const { scene, animations } = useGLTF('/network_node.glb');
-  const { actions } = useAnimations(animations, group);
-  const { scrollYProgress } = useScroll();
+  const mesh = useRef<THREE.Mesh>(null!);
+  // useScroll from @react-three/drei provides scroll offset within a <ScrollControls> wrapper.
+  const scroll = useScroll();
 
-  useEffect(() => {
-    const animationName = Object.keys(actions)[0];
-    if (animationName) {
-      actions[animationName]?.play();
-    }
-  }, [actions]);
-
-  // Rotate and move the shape on each frame
+  // Rotate and move the shape on each frame based on time and scroll position.
   useFrame((_state, delta) => {
-    if (group.current) {
+    if (mesh.current) {
       // Maintain existing gentle rotation
-      group.current.rotation.x += delta * 0.1;
-      group.current.rotation.y += delta * 0.15;
+      mesh.current.rotation.x += delta * 0.1;
+      mesh.current.rotation.y += delta * 0.15;
       
-      const scrollValue = scrollYProgress.get();
+      // `scroll.offset` gives a value from 0 to 1 based on scroll position.
+      const scrollValue = scroll.offset;
 
       // Link Z-rotation to scroll progress for a full 360-degree turn
-      group.current.rotation.z = scrollValue * Math.PI * 2;
+      mesh.current.rotation.z = scrollValue * Math.PI * 2;
       
       // Create an aggressive negative parallax effect by moving the model down and back
       // as the user scrolls down. This makes it appear to scroll "slower" than the page.
-      group.current.position.y = -scrollValue * 8; // Move down
-      group.current.position.z = scrollValue * 4;  // Move farther away
+      mesh.current.position.y = -scrollValue * 8; // Move down
+      mesh.current.position.z = scrollValue * 4;  // Move farther away
     }
   });
 
-  return <primitive ref={group} object={scene} scale={1.5} />;
+  return (
+    <Dodecahedron ref={mesh} args={[1.2, 0]} scale={1.8}>
+      <meshStandardMaterial 
+        color="#1e1b4b" 
+        wireframe 
+        emissive="#4f46e5" 
+        emissiveIntensity={0.3} 
+        roughness={0.5} 
+        metalness={0.8}
+      />
+    </Dodecahedron>
+  );
 };
-
-// Preload the model for a smoother loading experience.
-useGLTF.preload('/network_node.glb');
 
 // Main component that sets up the 3D scene
 const AIAgentModel: React.FC = () => {
   return (
     <Canvas camera={{ position: [0, 0, 8], fov: 70 }}>
-       {/* Lighting setup from AiAgent.tsx, better for models */}
       <hemisphereLight intensity={0.6} groundColor="black" />
       <pointLight intensity={2.5} position={[5, 5, 5]} color="#6366f1" />
       <spotLight
@@ -83,8 +83,11 @@ const AIAgentModel: React.FC = () => {
         castShadow
         shadow-mapSize={1024}
       />
-      <Model />
-      <Rig />
+      {/* ScrollControls is necessary for the @react-three/drei useScroll hook to work. */}
+      <ScrollControls pages={4} damping={0.1}>
+        <Model />
+        <Rig />
+      </ScrollControls>
     </Canvas>
   );
 };
