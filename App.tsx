@@ -7,7 +7,7 @@ import Portfolio from './components/Portfolio';
 import About from './components/About';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
-import AIAgentModel from './components/GeometricShape';
+import GeometricShape from './components/GeometricShape';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 const App: React.FC = () => {
@@ -21,7 +21,7 @@ const App: React.FC = () => {
         <div className="aurora-shape2"></div>
       </div>
       <div className="fixed inset-0 z-0 opacity-40">
-        <AIAgentModel />
+        <GeometricShape />
       </div>
 
       {/* Mid-ground decorative element with parallax scroll */}

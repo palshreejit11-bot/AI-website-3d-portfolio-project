@@ -70,7 +70,7 @@ const Model = () => {
 };
 
 // Main component that sets up the 3D scene
-const AIAgentModel: React.FC = () => {
+const GeometricShape: React.FC = () => {
   return (
     <Canvas camera={{ position: [0, 0, 8], fov: 70 }}>
       <hemisphereLight intensity={0.6} groundColor="black" />
@@ -92,4 +92,4 @@ const AIAgentModel: React.FC = () => {
   );
 };
 
-export default AIAgentModel;
+export default GeometricShape;
