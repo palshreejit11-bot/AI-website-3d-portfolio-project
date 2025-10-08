@@ -13,11 +13,11 @@ const Rig = () => {
     const radius = 8; // Match the initial camera z-position
 
     // Calculate the base orbiting position for a slow, subtle rotation
-    const orbitX = Math.sin(t * 0.1) * radius;
-    const orbitZ = Math.cos(t * 0.1) * radius;
+    const orbitX = Math.sin(t * 0.05) * radius;
+    const orbitZ = Math.cos(t * 0.05) * radius;
 
     // Define the target position including the orbit and the mouse parallax
-    const targetX = orbitX + mouse.x * 1.5; // Slightly reduced parallax effect
+    const targetX = orbitX + mouse.x * 1; // Slightly reduced parallax effect
     const targetY = mouse.y * 1;
     const targetZ = orbitZ;
 
@@ -45,7 +45,7 @@ const Shape = () => {
     color: "#4f46e5",
     wireframe: true,
     emissive: "#6366f1",
-    emissiveIntensity: 0.4, // Increased for more glow
+    emissiveIntensity: 0.4,
     flatShading: true,
   }), []);
 
@@ -59,9 +59,9 @@ const GeometricShape: React.FC = () => {
   return (
     // Adjusted camera position and fov for a slightly different perspective
     <Canvas camera={{ position: [0, 0, 8], fov: 70 }}>
-      {/* Fix: Replaced direct JSX tags for lights with the <primitive> element to resolve TypeScript errors for unrecognized JSX elements. */}
-      <primitive object={new THREE.AmbientLight(undefined, 0.5)} />
-      <primitive object={new THREE.PointLight(undefined, 1.5)} position={[10, 10, 10]} />
+      {/* Fix: Use idiomatic declarative light components. This resolves TypeScript errors for unrecognized JSX elements. */}
+      <ambientLight intensity={0.5} />
+      <pointLight intensity={1.5} position={[10, 10, 10]} />
       <Shape />
       <Rig />
     </Canvas>
