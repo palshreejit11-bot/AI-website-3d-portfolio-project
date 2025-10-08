@@ -57,14 +57,18 @@ const Portfolio: React.FC = () => {
                     View Project <span className="inline-block transform group-hover:translate-x-1 transition-transform">&rarr;</span>
                   </a>
                 </div>
-                <div className={`order-1 ${index % 2 === 0 ? 'lg:order-2' : 'lg:order-1'}`}>
+                <div 
+                  className={`order-1 ${index % 2 === 0 ? 'lg:order-2' : 'lg:order-1'}`}
+                  style={{ perspective: '1200px' }}
+                >
                   <motion.div 
                     className="rounded-lg overflow-hidden border-2 border-gray-800 shadow-2xl"
                     whileHover={{
-                      scale: 1.05,
+                      scale: 1.03,
+                      rotateY: index % 2 === 0 ? -8 : 8,
                       borderColor: 'rgb(99 102 241)', // Tailwind's indigo-500
                       boxShadow: '0 25px 50px -12px rgb(99 102 241 / 0.25)',
-                      transition: { duration: 0.3 } 
+                      transition: { duration: 0.4, ease: 'easeOut' } 
                     }}
                   >
                     <img src={project.image} alt={project.title} className="w-full h-full object-cover"/>
